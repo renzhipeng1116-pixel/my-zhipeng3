@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFC一触即评智能助手</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 页面头部 -->
+    <header class="header">
+        <div class="merchant-info">
+            <div class="merchant-logo">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iOCIgZmlsbD0iIzQyODVGNCIvPgo8cGF0aCBkPSJNMTIgMjBMMjAgMTJMMjggMjBIMTJaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMTIgMjhMMjAgMjBMMjggMjhIMTJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K" alt="商家Logo" class="logo-img">
+            </div>
+            <div class="merchant-details">
+                <h1 class="merchant-name">志鹏的火锅店</h1>
+                <p class="welcome-text">感谢您的光临！您的肯定是我们最大的动力。</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- 核心交互区域 -->
+    <main class="main-content">
+        <!-- 初始状态 -->
+        <div class="initial-state" id="initialState">
+            <h2 class="main-title">只需一步，轻松留下您的五星好评</h2>
+            
+            <button class="primary-btn" id="generateBtn">
+                <span class="btn-icon">✨</span>
+                <span class="btn-text">一键生成专属好评</span>
+            </button>
+            
+            <p class="assistant-text">我们将调用Gemini AI模型，为您智能生成一段真诚、个性化的赞美。</p>
+        </div>
+
+        <!-- 加载状态 -->
+        <div class="loading-state" id="loadingState" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">正在生成中...</p>
+        </div>
+
+        <!-- 结果展示状态 -->
+        <div class="result-state" id="resultState" style="display: none;">
+            <h3 class="result-title">为您生成的好评如下：</h3>
+            
+            <div class="review-card">
+                <textarea class="review-text" id="reviewText" readonly placeholder="正在生成您的好评..."></textarea>
+                <div class="edit-hint">点击可编辑</div>
+            </div>
+            
+            <button class="final-btn" id="copyAndOpenBtn">
+                <span class="btn-icon">📱</span>
+                <span class="btn-text">复制好评并打开点评App</span>
+            </button>
+            
+            <p class="final-hint">跳转后，在新页面长按粘贴即可发送。</p>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <p class="tech-support">任志鹏啊志鹏支持</p>
+    </footer>
+
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
