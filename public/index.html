@@ -27,12 +27,35 @@
         <div class="initial-state" id="initialState">
             <h2 class="main-title">只需一步，轻松留下您的五星好评</h2>
             
-            <button class="primary-btn" id="generateBtn">
+            <!-- 就餐人群选择 -->
+            <div class="selection-group">
+                <h3 class="selection-title">选择就餐人群</h3>
+                <div class="button-group" id="crowdGroup">
+                    <button class="selection-btn" data-value="独自吃饭">独自吃饭</button>
+                    <button class="selection-btn" data-value="和朋友吃饭">和朋友吃饭</button>
+                    <button class="selection-btn" data-value="和家人吃饭">和家人吃饭</button>
+                    <button class="selection-btn" data-value="商务宴请">商务宴请</button>
+                </div>
+            </div>
+            
+            <!-- 特色菜选择 -->
+            <div class="selection-group">
+                <h3 class="selection-title">选择已点特色菜（可多选）</h3>
+                <div class="button-group" id="dishGroup">
+                    <button class="selection-btn multi" data-value="麻辣鸳鸯锅底">麻辣鸳鸯锅底</button>
+                    <button class="selection-btn multi" data-value="雪花肥牛">雪花肥牛</button>
+                    <button class="selection-btn multi" data-value="油炸冰激凌">油炸冰激凌</button>
+                    <button class="selection-btn multi" data-value="肥肠">肥肠</button>
+                    <button class="selection-btn multi" data-value="鸭血">鸭血</button>
+                </div>
+            </div>
+            
+            <button class="primary-btn" id="generateBtn" disabled>
                 <span class="btn-icon">✨</span>
-                <span class="btn-text">一键生成专属好评</span>
+                <span class="btn-text">生成专属好评</span>
             </button>
             
-            <p class="assistant-text">我们将调用Gemini AI模型，为您智能生成一段真诚、个性化的赞美。</p>
+            <p class="assistant-text">我们将调用DeepSeek AI模型，根据您的选择生成一段真诚、个性化的赞美。</p>
         </div>
 
         <!-- 加载状态 -->
@@ -52,7 +75,7 @@
             
             <button class="final-btn" id="copyAndOpenBtn">
                 <span class="btn-icon">📱</span>
-                <span class="btn-text">复制好评并打开点评App</span>
+                <span class="btn-text">复制好评并打开大众点评</span>
             </button>
             
             <p class="final-hint">跳转后，在新页面长按粘贴即可发送。</p>

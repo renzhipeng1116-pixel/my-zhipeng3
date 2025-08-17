@@ -10,28 +10,34 @@ const CONFIG = {
     
     // AI生成配置
     ai: {
-        // 是否启用真实AI API（false时使用模拟数据）
-        enableRealAPI: false,
+        // 是否启用真实AI API（true时使用DeepSeek API）
+        enableRealAPI: true,
         
-        // 真实AI API配置
+        // DeepSeek API配置
         api: {
-            endpoint: "https://your-ai-api.com/generate",
-            apiKey: "your-api-key-here",
-            model: "gemini-pro"
+            endpoint: "https://api.deepseek.com/v1/chat/completions",
+            apiKey: "sk-30747bae1645410ebe2c071e4d2cb9ea",
+            model: "deepseek-chat"
         },
         
         // 模拟生成延迟（毫秒）
         mockDelay: 2000,
         
-        // 好评模板（当enableRealAPI为false时使用）
-        templates: [
-            "今天在{merchantName}的体验真的太棒了！服务一如既往地无微不至，让人感觉特别舒心。他们家的番茄锅底是我的最爱，浓郁开胃，涮什么都好吃。整个过程非常愉快，绝对是朋友聚餐的首选！",
-            
-            "{merchantName}的服务质量真的没话说！从进门到离开，每一个细节都处理得很到位。食材新鲜，味道正宗，环境也很舒适。下次还会再来，强烈推荐给大家！",
-            
-            "在{merchantName}用餐的体验非常棒！服务员态度很好，菜品质量很高，价格也很合理。整个用餐过程很愉快，是值得推荐的好地方！",
-            
-            "{merchantName}真的很不错！环境优雅，服务周到，菜品美味。特别是他们的特色菜，味道独特，让人回味无穷。服务员的专业素养也很高，整体体验非常满意！"
+        // 就餐场景选项
+        crowdOptions: [
+            "独自吃饭",
+            "和朋友吃饭", 
+            "和家人吃饭",
+            "商务宴请"
+        ],
+        
+        // 特色菜选项
+        dishOptions: [
+            "麻辣鸳鸯锅底",
+            "雪花肥牛",
+            "油炸冰激凌",
+            "肥肠",
+            "鸭血"
         ]
     },
     
@@ -39,17 +45,17 @@ const CONFIG = {
     apps: {
         // 主要目标应用（优先尝试打开）
         primary: {
-            name: "美团",
-            scheme: "meituan://",
-            webUrl: "https://www.meituan.com/"
+            name: "大众点评",
+            scheme: "dianping://",
+            webUrl: "https://www.dianping.com/"
         },
         
         // 备用应用列表
         fallback: [
             {
-                name: "大众点评",
-                scheme: "dianping://",
-                webUrl: "https://www.dianping.com/"
+                name: "美团",
+                scheme: "meituan://",
+                webUrl: "https://www.meituan.com/"
             },
             {
                 name: "小红书",

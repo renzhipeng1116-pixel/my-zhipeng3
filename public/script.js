@@ -8,17 +8,63 @@ class PageStateManager {
         this.copyAndOpenBtn = document.getElementById('copyAndOpenBtn');
         this.reviewText = document.getElementById('reviewText');
         
+        // 选择状态
+        this.selectedCrowd = null;
+        this.selectedDishes = [];
+        
         this.init();
     }
     
     init() {
         this.bindEvents();
         this.setupReviewTextEditing();
+        this.setupSelectionButtons();
     }
     
     bindEvents() {
         this.generateBtn.addEventListener('click', () => this.handleGenerateReview());
         this.copyAndOpenBtn.addEventListener('click', () => this.handleCopyAndOpen());
+    }
+    
+    // 设置选择按钮
+    setupSelectionButtons() {
+        // 就餐人群选择（单选）
+        const crowdButtons = document.querySelectorAll('#crowdGroup .selection-btn');
+        crowdButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // 移除其他选中状态
+                crowdButtons.forEach(b => b.classList.remove('selected'));
+                // 添加当前选中状态
+                btn.classList.add('selected');
+                this.selectedCrowd = btn.dataset.value;
+                this.checkGenerateButton();
+            });
+        });
+        
+        // 特色菜选择（多选）
+        const dishButtons = document.querySelectorAll('#dishGroup .selection-btn');
+        dishButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.classList.toggle('selected');
+                if (btn.classList.contains('selected')) {
+                    this.selectedDishes.push(btn.dataset.value);
+                } else {
+                    this.selectedDishes = this.selectedDishes.filter(dish => dish !== btn.dataset.value);
+                }
+                this.checkGenerateButton();
+            });
+        });
+    }
+    
+    // 检查生成按钮状态
+    checkGenerateButton() {
+        if (this.selectedCrowd && this.selectedDishes.length > 0) {
+            this.generateBtn.disabled = false;
+            this.generateBtn.style.opacity = '1';
+        } else {
+            this.generateBtn.disabled = true;
+            this.generateBtn.style.opacity = '0.6';
+        }
     }
     
     // 显示初始状态
@@ -63,26 +109,81 @@ class PageStateManager {
         }
     }
     
-    // 生成AI好评（模拟）
+    // 生成AI好评（使用DeepSeek API）
     async generateAIReview() {
-        // 模拟网络延迟
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        try {
+            const merchantName = document.querySelector('.merchant-name').textContent;
+            
+            // 构建提示词
+            const prompt = `请为"${merchantName}"生成一段真诚、生动的好评。要求：
+            
+就餐场景：${this.selectedCrowd}
+已点特色菜：${this.selectedDishes.join('、')}
+
+请生成一段100-150字的好评，要求：
+1. 语言生动自然，有具体细节描述
+2. 体现就餐场景的特点
+3. 突出特色菜的美味
+4. 表达对服务的满意
+5. 语言亲切友好，符合真实顾客评价风格
+
+请直接输出好评内容，不要加任何解释。`;
+
+            // 调用DeepSeek API
+            const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer sk-30747bae1645410ebe2c071e4d2cb9ea'
+                },
+                body: JSON.stringify({
+                    model: 'deepseek-chat',
+                    messages: [
+                        {
+                            role: 'system',
+                            content: '你是一个专业的餐饮评价生成助手，擅长生成真诚、生动、个性化的餐厅好评。'
+                        },
+                        {
+                            role: 'user',
+                            content: prompt
+                        }
+                    ],
+                    stream: false,
+                    max_tokens: 500,
+                    temperature: 0.8
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`API调用失败: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const review = data.choices[0].message.content.trim();
+            
+            return review || this.getFallbackReview(merchantName);
+            
+        } catch (error) {
+            console.error('DeepSeek API调用失败:', error);
+            // 如果API调用失败，使用备用模板
+            const merchantName = document.querySelector('.merchant-name').textContent;
+            return this.getFallbackReview(merchantName);
+        }
+    }
+    
+    // 备用好评模板
+    getFallbackReview(merchantName) {
+        const crowdTemplates = {
+            '独自吃饭': `今天一个人来${merchantName}用餐，没想到体验这么棒！服务员很贴心，推荐了适合一个人的份量。`,
+            '和朋友吃饭': `和朋友们一起来${merchantName}聚餐，气氛超级好！大家都很满意这里的服务和菜品。`,
+            '和家人吃饭': `带着家人来${merchantName}，老人孩子都很喜欢这里的环境和口味，很温馨的家庭时光。`,
+            '商务宴请': `在${merchantName}接待客户，环境优雅，服务专业，给足了面子，客户很满意。`
+        };
         
-        // 这里可以替换为真实的Gemini AI API调用
-        const merchantName = document.querySelector('.merchant-name').textContent;
-        const reviews = [
-            `今天在${merchantName}的体验真的太棒了！服务一如既往地无微不至，让人感觉特别舒心。他们家的麻辣锅底是我的最爱，香辣过瘾，涮什么都好吃。整个过程非常愉快，绝对是朋友聚餐的首选！`,
-            
-            `${merchantName}的服务质量真的没话说！从进门到离开，每一个细节都处理得很到位。食材新鲜，味道正宗，环境也很舒适。下次还会再来，强烈推荐给大家！`,
-            
-            `在${merchantName}用餐的体验非常棒！服务员态度很好，菜品质量很高，价格也很合理。整个用餐过程很愉快，是值得推荐的好地方！`,
-            
-            `${merchantName}真的很不错！环境优雅，服务周到，菜品美味。特别是他们的特色菜，味道独特，让人回味无穷。服务员的专业素养也很高，整体体验非常满意！`
-        ];
+        const crowdText = crowdTemplates[this.selectedCrowd] || `在${merchantName}用餐`;
+        const dishText = this.selectedDishes.length > 0 ? `，特别是${this.selectedDishes.join('、')}，味道真的很棒！` : '，菜品质量很高！';
         
-        // 随机选择一个好评模板
-        const randomReview = reviews[Math.floor(Math.random() * reviews.length)];
-        return randomReview;
+        return `${crowdText}的体验非常棒${dishText}服务态度很好，环境也很舒适，下次还会再来，强烈推荐给大家！`;
     }
     
     // 处理复制并打开应用
@@ -107,19 +208,19 @@ class PageStateManager {
     
     // 打开点评应用
     openReviewApp() {
-        // 尝试打开美团应用
-        const meituanUrl = 'meituan://';
-        const meituanWebUrl = 'https://www.meituan.com/';
+        // 尝试打开大众点评应用
+        const dianpingUrl = 'dianping://';
+        const dianpingWebUrl = 'https://www.dianping.com/';
         
         // 尝试打开应用，如果失败则打开网页版
-        window.location.href = meituanUrl;
+        window.location.href = dianpingUrl;
         
         // 延迟后如果还在当前页面，则打开网页版
         setTimeout(() => {
             if (document.hidden || document.webkitHidden) {
                 return; // 如果页面已经隐藏，说明可能已经跳转
             }
-            window.open(meituanWebUrl, '_blank');
+            window.open(dianpingWebUrl, '_blank');
         }, 1000);
     }
     
